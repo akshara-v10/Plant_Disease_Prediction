@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Crop Disease Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .settings-section {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .settings-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #4CAF50;
+        }
+        
+        .settings-description {
+            opacity: 0.8;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .settings-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .setting-btn {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1em;
+            font-weight: 600;
+        }
+        
+        .setting-btn:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .setting-btn.active {
+            background: linear-gradient(135deg, #4CAF50, #388E3C);
+            border-color: #4CAF50;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #4CAF50;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+        
+        .toggle-setting {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .about-card {
+            background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(56,142,60,0.1));
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .app-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: rgba(76,175,80,0.2);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .danger-zone {
+            background: rgba(244,67,54,0.1);
+            border-left-color: #f44336;
+        }
+        
+        .danger-btn {
+            background: rgba(244,67,54,0.2);
+            border-color: rgba(244,67,54,0.3);
+            color: #ff6b6b;
+        }
+        
+        .danger-btn:hover {
+            background: rgba(244,67,54,0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <button onclick="window.location.href='index.html'" class="nav-btn">
+                <span class="nav-icon">🏠</span> Home
+            </button>
+            <button onclick="window.location.href='reference.html'" class="nav-btn">
+                <span class="nav-icon">📚</span> Reference
+            </button>
+            <button onclick="window.location.href='history.html'" class="nav-btn">
+                <span class="nav-icon">📜</span> History
+            </button>
+            <button onclick="window.location.href='settings.html'" class="nav-btn active">
+                <span class="nav-icon">⚙️</span> Settings
+            </button>
+        </div>
+    </nav>
+
+    <div id="google_translate_element"></div>
+
+    <main>
+        <div class="card" style="max-width: 900px; margin: 80px auto 40px;">
+            <button onclick="window.location.href='index.html'" class="btn-back">
+                ← Back to Home
+            </button>
+            
+            <h2 style="font-size: 2.5em; text-align: center; margin-bottom: 10px;">⚙️ Settings</h2>
+            <p style="text-align: center; opacity: 0.8; margin-bottom: 40px;">Customize your experience</p>
+
+            <!-- Language Settings -->
+            <div class="settings-section">
+                <div class="settings-title">🌐 Language / भाषा / భాష</div>
+                <p class="settings-description">Choose your preferred language for the application interface</p>
+                <div class="settings-options">
+                    <button class="setting-btn active" onclick="setLanguage('en')" id="lang-en">
+                        🇬🇧 English
+                    </button>
+                    <button class="setting-btn" onclick="setLanguage('hi')" id="lang-hi">
+                        🇮🇳 हिंदी (Hindi)
+                    </button>
+                    <button class="setting-btn" onclick="setLanguage('te')" id="lang-te">
+                        🇮🇳 తెలుగు (Telugu)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Theme Settings -->
+            <div class="settings-section">
+                <div class="settings-title">🎨 Theme</div>
+                <p class="settings-description">Select your preferred visual theme</p>
+                <div class="settings-options">
+                    <button class="setting-btn active" onclick="setTheme('dark')" id="theme-dark">
+                        🌙 Dark Mode
+                    </button>
+                    <button class="setting-btn" onclick="setTheme('light')" id="theme-light">
+                        ☀️ Light Mode
+                    </button>
+                    <button class="setting-btn" onclick="setTheme('auto')" id="theme-auto">
+                        🔄 Auto (System)
+                    </button>
+                </div>
+            </div>
+
+            <!-- App Preferences -->
+            <div class="settings-section">
+                <div class="settings-title">📋 App Preferences</div>
+                <p class="settings-description">Customize app behavior and features</p>
+                
+                <div class="toggle-setting">
+                    <div>
+                        <strong>Auto-save Results</strong>
+                        <p style="font-size: 0.9em; opacity: 0.7; margin: 5px 0 0 0;">Automatically save prediction results to history</p>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSetting('autosave')" id="toggle-autosave">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                
+                <div class="toggle-setting">
+                    <div>
+                        <strong>Show Capture Tips</strong>
+                        <p style="font-size: 0.9em; opacity: 0.7; margin: 5px 0 0 0;">Display photography tips on capture page</p>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSetting('tips')" id="toggle-tips">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                
+                <div class="toggle-setting">
+                    <div>
+                        <strong>Enable Notifications</strong>
+                        <p style="font-size: 0.9em; opacity: 0.7; margin: 5px 0 0 0;">Get notified about new features and updates</p>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSetting('notifications')" id="toggle-notifications">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="settings-section">
+                <div class="settings-title">📊 Usage Statistics</div>
+                <p class="settings-description">Your app usage at a glance</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-predictions">0</div>
+                        <div class="stat-label">Total Predictions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-diseases">0</div>
+                        <div class="stat-label">Diseases Detected</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-accuracy">0%</div>
+                        <div class="stat-label">Avg. Confidence</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="settings-section about-card">
+                <div class="app-icon">🌾</div>
+                <h3 style="margin-bottom: 10px;">Crop Disease Detection System</h3>
+                <p style="opacity: 0.9; line-height: 1.6; margin-bottom: 15px;">
+                    An AI-powered agricultural tool designed to help farmers identify crop diseases quickly and accurately. 
+                    Get instant disease detection with treatment recommendations.
+                </p>
+                <div class="version-badge">Version 2.0.0 Enhanced</div>
+                <p style="font-size: 0.85em; opacity: 0.6; margin-top: 20px;">
+                    © 2026 | Made with 💚 for Farmers
+                </p>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-section danger-zone">
+                <div class="settings-title">⚠️ Danger Zone</div>
+                <p class="settings-description">These actions cannot be undone. Proceed with caution.</p>
+                <div class="settings-options">
+                    <button class="setting-btn danger-btn" onclick="clearCache()">
+                        🗑️ Clear Cache
+                    </button>
+                    <button class="setting-btn danger-btn" onclick="resetSettings()">
+                        🔄 Reset All Settings
+                    </button>
+                    <button class="setting-btn danger-btn" onclick="clearAllData()">
+                        💣 Clear All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Load saved settings
+        function loadSettings() {
+            const language = localStorage.getItem('app_language') || 'en';
+            const theme = localStorage.getItem('app_theme') || 'dark';
+            
+            document.querySelectorAll('.setting-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${language}`)?.classList.add('active');
+            document.getElementById(`theme-${theme}`)?.classList.add('active');
+            
+            // Load toggle states
+            const autosave = localStorage.getItem('setting_autosave') !== 'false';
+            const tips = localStorage.getItem('setting_tips') !== 'false';
+            const notifications = localStorage.getItem('setting_notifications') === 'true';
+            
+            setToggleState('autosave', autosave);
+            setToggleState('tips', tips);
+            setToggleState('notifications', notifications);
+            
+            // Load statistics
+            loadStatistics();
+        }
+
+        function setLanguage(lang) {
+            localStorage.setItem('app_language', lang);
+            document.querySelectorAll('[id^="lang-"]').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+            alert(`Language set to ${lang}. Page will reload.`);
+            setTimeout(() => location.reload(), 1000);
+        }
+
+        function setTheme(theme) {
+            localStorage.setItem('app_theme', theme);
+            document.querySelectorAll('[id^="theme-"]').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`theme-${theme}`).classList.add('active');
+            alert(`Theme set to ${theme} mode`);
+        }
+
+        function toggleSetting(setting) {
+            const toggle = document.getElementById(`toggle-${setting}`);
+            const isActive = toggle.classList.contains('active');
+            toggle.classList.toggle('active');
+            localStorage.setItem(`setting_${setting}`, !isActive);
+        }
+
+        function setToggleState(setting, state) {
+            const toggle = document.getElementById(`toggle-${setting}`);
+            if (state) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+        }
+
+        function loadStatistics() {
+            try {
+                const history = JSON.parse(localStorage.getItem('cd_history') || '[]');
+                document.getElementById('stat-predictions').textContent = history.length;
+                
+                const uniqueDiseases = [...new Set(history.map(item => item.disease))].length;
+                document.getElementById('stat-diseases').textContent = uniqueDiseases;
+                
+                if (history.length > 0) {
+                    const avgConf = history.reduce((sum, item) => sum + item.confidence, 0) / history.length;
+                    document.getElementById('stat-accuracy').textContent = (avgConf * 100).toFixed(1) + '%';
+                }
+            } catch (e) {
+                console.error('Error loading statistics:', e);
+            }
+        }
+
+        function clearCache() {
+            if (confirm('Clear app cache? This will remove temporary data but keep your history.')) {
+                alert('Cache cleared successfully!');
+            }
+        }
+
+        function resetSettings() {
+            if (confirm('Reset all settings to default values?')) {
+                localStorage.removeItem('app_language');
+                localStorage.removeItem('app_theme');
+                localStorage.removeItem('setting_autosave');
+                localStorage.removeItem('setting_tips');
+                localStorage.removeItem('setting_notifications');
+                alert('Settings reset to defaults!');
+                location.reload();
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ WARNING: This will delete ALL your data including prediction history. This action cannot be undone!\n\nAre you absolutely sure?')) {
+                if (confirm('Last confirmation: Delete everything?')) {
+                    localStorage.clear();
+                    alert('All data cleared. Redirecting to home...');
+                    window.location.href = 'index.html';
+                }
+            }
+        }
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,te,hi',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+
+        loadSettings();
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

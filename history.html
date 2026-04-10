@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction History - Crop Disease Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .history-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .history-card:hover {
+            transform: translateY(-5px);
+            border-color: #4CAF50;
+            box-shadow: 0 12px 30px rgba(76,175,80,0.3);
+        }
+        
+        .history-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            cursor: zoom-in;
+        }
+        
+        .history-info {
+            padding: 20px;
+        }
+        
+        .history-disease-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .history-timestamp {
+            font-size: 0.85em;
+            opacity: 0.7;
+            margin-bottom: 12px;
+        }
+        
+        .history-confidence {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .mini-confidence-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .mini-confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .history-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+        
+        .view-btn {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .view-btn:hover {
+            background: #388E3C;
+        }
+        
+        .delete-btn {
+            background: rgba(244,67,54,0.2);
+            color: #ff6b6b;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(244,67,54,0.3);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 5em;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+        
+        .clear-all-btn {
+            background: rgba(244,67,54,0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(244,67,54,0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .clear-all-btn:hover {
+            background: rgba(244,67,54,0.3);
+        }
+        
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+        
+        @media (max-width: 768px) {
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .history-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <button onclick="window.location.href='index.html'" class="nav-btn">
+                <span class="nav-icon">🏠</span> Home
+            </button>
+            <button onclick="window.location.href='reference.html'" class="nav-btn">
+                <span class="nav-icon">📚</span> Reference
+            </button>
+            <button onclick="window.location.href='history.html'" class="nav-btn active">
+                <span class="nav-icon">📜</span> History
+            </button>
+            <button onclick="window.location.href='settings.html'" class="nav-btn">
+                <span class="nav-icon">⚙️</span> Settings
+            </button>
+        </div>
+    </nav>
+
+    <div id="google_translate_element"></div>
+
+    <main>
+        <div class="card" style="max-width: 1200px; margin: 80px auto 40px;">
+            <button onclick="window.location.href='index.html'" class="btn-back">
+                ← Back to Home
+            </button>
+            
+            <div class="history-header">
+                <div>
+                    <h2 style="font-size: 2.5em; margin-bottom: 5px;">📜 Prediction History</h2>
+                    <p style="opacity: 0.8;" id="historyCount">0 predictions saved</p>
+                </div>
+                <button id="clearAllBtn" class="clear-all-btn" onclick="clearAllHistory()" style="display:none;">
+                    🗑️ Clear All History
+                </button>
+            </div>
+
+            <div class="filter-section" id="filterSection" style="display:none;">
+                <h4 style="margin-bottom: 10px;">Filter by Disease:</h4>
+                <div class="filter-buttons" id="filterButtons"></div>
+            </div>
+
+            <div id="historyContainer">
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <h3 style="margin-bottom: 15px;">No Predictions Yet</h3>
+                    <p style="opacity: 0.8; margin-bottom: 25px;">Start analyzing crop images to build your history</p>
+                    <button onclick="window.location.href='upload.html'" class="btn btn-primary">
+                        📸 Start Detection
+                    </button>
+                </div>
+            </div>
+
+            <div class="history-grid" id="historyGrid" style="display:none;"></div>
+        </div>
+    </main>
+
+    <script>
+        let historyData = [];
+        let currentFilter = 'all';
+
+        function loadHistory() {
+            try {
+                const stored = localStorage.getItem('cd_history');
+                historyData = stored ? JSON.parse(stored) : [];
+                
+                if (historyData.length === 0) {
+                    document.getElementById('historyContainer').style.display = 'block';
+                    document.getElementById('historyGrid').style.display = 'none';
+                    document.getElementById('clearAllBtn').style.display = 'none';
+                    document.getElementById('filterSection').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('historyContainer').style.display = 'none';
+                document.getElementById('historyGrid').style.display = 'grid';
+                document.getElementById('clearAllBtn').style.display = 'block';
+                document.getElementById('filterSection').style.display = 'block';
+                
+                document.getElementById('historyCount').textContent = 
+                    `${historyData.length} prediction${historyData.length > 1 ? 's' : ''} saved`;
+
+                setupFilters();
+                displayHistory();
+            } catch (e) {
+                console.error('Error loading history:', e);
+            }
+        }
+
+        function setupFilters() {
+            const diseases = [...new Set(historyData.map(item => item.disease))];
+            const filterButtons = document.getElementById('filterButtons');
+            
+            let html = `<button class="filter-btn active" onclick="filterHistory('all')">All (${historyData.length})</button>`;
+            
+            diseases.forEach(disease => {
+                const count = historyData.filter(item => item.disease === disease).length;
+                html += `<button class="filter-btn" onclick="filterHistory('${disease}')">${disease} (${count})</button>`;
+            });
+            
+            filterButtons.innerHTML = html;
+        }
+
+        function filterHistory(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayHistory();
+        }
+
+        function displayHistory() {
+            const grid = document.getElementById('historyGrid');
+            const filtered = currentFilter === 'all' ? 
+                historyData : 
+                historyData.filter(item => item.disease === currentFilter);
+
+            grid.innerHTML = filtered.map((item, index) => {
+                const date = new Date(item.timestamp);
+                const conf = (item.confidence * 100).toFixed(1);
+                
+                return `
+                    <div class="history-card">
+                        <img src="${item.image}" alt="${item.disease}" class="history-image" onclick="viewHistoryItem(${historyData.indexOf(item)})">
+                        <div class="history-info">
+                            <div class="history-disease-name">${item.disease}</div>
+                            <div class="history-timestamp">
+                                📅 ${date.toLocaleDateString()} 
+                                🕐 ${date.toLocaleTimeString()}
+                            </div>
+                            <div class="history-confidence">
+                                <span style="font-size: 0.9em;">Confidence:</span>
+                                <div class="mini-confidence-bar">
+                                    <div class="mini-confidence-fill" style="width: ${conf}%"></div>
+                                </div>
+                                <span style="font-size: 0.9em; font-weight: 600;">${conf}%</span>
+                            </div>
+                            <div class="history-actions">
+                                <button class="history-btn view-btn" onclick="viewHistoryItem(${historyData.indexOf(item)})">
+                                    👁️ View
+                                </button>
+                                <button class="history-btn delete-btn" onclick="deleteHistoryItem(${historyData.indexOf(item)})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function viewHistoryItem(index) {
+            const item = historyData[index];
+            localStorage.setItem('cd_img', item.image);
+            localStorage.setItem('cd_label', item.disease);
+            localStorage.setItem('cd_conf', item.confidence.toString());
+            localStorage.setItem('cd_disease_key', item.diseaseKey);
+            window.location.href = 'result.html';
+        }
+
+        function deleteHistoryItem(index) {
+            if (confirm('Delete this prediction from history?')) {
+                historyData.splice(index, 1);
+                localStorage.setItem('cd_history', JSON.stringify(historyData));
+                loadHistory();
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm('Are you sure you want to clear all prediction history? This cannot be undone.')) {
+                localStorage.removeItem('cd_history');
+                historyData = [];
+                loadHistory();
+            }
+        }
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,te,hi',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+
+        loadHistory();
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

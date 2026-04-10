@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Option - Crop Disease Detection</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="google_translate_element"></div>
+
+    <main>
+        <div class="card" style="max-width:720px; margin:40px auto;">
+            <h2>Select an Option</h2>
+            <div class="button-group">
+                <div class="option">
+                    <img src="ImagesUsed/camera.png" alt="Capture" class="option-img">
+                    <button class="btn" onclick="goTo('upload.html')">Capture Image</button>
+                </div>
+                <div class="option">
+                    <img src="ImagesUsed/upload.png" alt="upload" class="option-img">
+                    <button class="btn" onclick="goTo('upload.html')">Upload Image</button>
+                </div>
+                <div class="option">
+                    <img src="ImagesUsed/reference.png" alt="Reference" class="option-img">
+                    <button class="btn" onclick="goTo('reference.html')">Reference</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function goTo(page) {
+            window.location.href = page;
+        }
+    </script>
+
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,te,hi',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+ 
+</html>

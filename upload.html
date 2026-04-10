@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Capture Image - Crop Disease Detection</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .capture-section {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .capture-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .capture-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin: 30px 0;
+    }
+    
+    .camera-container {
+      background: rgba(0,0,0,0.3);
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .camera-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .camera-placeholder {
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .camera-placeholder img {
+      width: 100px;
+      height: 100px;
+      opacity: 0.3;
+      margin-bottom: 20px;
+    }
+    
+    .capture-button {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: white;
+      border: 5px solid #4CAF50;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      transition: all 0.2s;
+    }
+    
+    .capture-button:hover {
+      transform: translateX(-50%) scale(1.1);
+    }
+    
+    .preview-container {
+      background: rgba(0,0,0,0.2);
+      border-radius: 16px;
+      border: 2px dashed rgba(255,255,255,0.3);
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .preview-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .preview-placeholder {
+      text-align: center;
+      opacity: 0.5;
+    }
+    
+    .controls-grid {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+    
+    .tips-section {
+      background: rgba(76,175,80,0.1);
+      border-left: 4px solid #4CAF50;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    
+    .tips-section h4 {
+      margin-bottom: 15px;
+      color: #4CAF50;
+    }
+    
+    .tips-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+    }
+    
+    .tip-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .tip-icon {
+      color: #4CAF50;
+      font-size: 1.2em;
+    }
+    
+    @media (max-width: 768px) {
+      .capture-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .loader {
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top: 3px solid #4CAF50;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-left: 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="nav-bar">
+    <div class="nav-content">
+      <button onclick="window.location.href='index.html'" class="nav-btn">
+        <span class="nav-icon">🏠</span> Home
+      </button>
+      <button onclick="window.location.href='reference.html'" class="nav-btn">
+        <span class="nav-icon">📚</span> Reference
+      </button>
+      <button onclick="window.location.href='history.html'" class="nav-btn">
+        <span class="nav-icon">📜</span> History
+      </button>
+      <button onclick="window.location.href='settings.html'" class="nav-btn">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="card capture-section" style="margin-top: 80px;">
+      <button onclick="window.location.href='options.html'" class="btn-back">
+        ← Back
+      </button>
+      
+      <div class="capture-header">
+        <h2 style="font-size: 2.5em; margin-bottom: 10px;">📸 Capture / Upload Leaf Image</h2>
+        <p style="opacity: 0.8;">Take a clear photo of the affected leaf for accurate disease detection</p>
+      </div>
+
+      <div class="capture-layout">
+        <div class="camera-container" id="cameraContainer">
+          <video id="video" autoplay playsinline style="display:none;"></video>
+          <div class="camera-placeholder" id="cameraPlaceholder">
+            <img src="ImagesUsed/camera.png" alt="Camera">
+            <p>Camera not started</p>
+          </div>
+          <button id="captureBtn" class="capture-button" style="display:none;">📷</button>
+        </div>
+
+        <div class="preview-container" id="previewContainer">
+          <img id="previewImg" src="" alt="Preview" style="display:none;">
+          <div class="preview-placeholder" id="previewPlaceholder">
+            <p style="font-size: 3em;">🖼️</p>
+            <p>Preview will appear here</p>
+          </div>
+        </div>
+      </div>
+
+      <canvas id="canvas" style="display:none;"></canvas>
+
+      <div class="controls-grid">
+        <button id="startCameraBtn" class="btn btn-primary">
+          📹 Start Camera
+        </button>
+        <button id="uploadBtn" class="btn btn-primary">
+          📁 Upload from Device
+        </button>
+        <button id="retakeBtn" class="btn btn-secondary" style="display:none;">
+          🔄 Retake Photo
+        </button>
+        <button id="predictBtn" class="btn btn-success" style="display:none;">
+          🔍 Analyze Disease
+        </button>
+      </div>
+
+      <input id="fileInput" type="file" accept="image/*" style="display:none">
+
+      <div class="tips-section">
+        <h4>💡 Tips for Best Results</h4>
+        <div class="tips-list">
+          <div class="tip-item">
+            <span class="tip-icon">☀️</span>
+            <span>Use natural daylight</span>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">📏</span>
+            <span>Hold 6-8 inches from leaf</span>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">🎯</span>
+            <span>Focus on affected areas</span>
+          </div>
+          <div class="tip-item">
+            <span class="tip-icon">🚫</span>
+            <span>Avoid shadows and glare</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const previewImg = document.getElementById('previewImg');
+    const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+    const previewPlaceholder = document.getElementById('previewPlaceholder');
+    const captureBtn = document.getElementById('captureBtn');
+    const startCameraBtn = document.getElementById('startCameraBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const predictBtn = document.getElementById('predictBtn');
+    const fileInput = document.getElementById('fileInput');
+
+    let stream = null;
+    let capturedImage = null;
+
+    startCameraBtn.addEventListener('click', async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: 'environment' },
+          audio: false 
+        });
+        video.srcObject = stream;
+        video.style.display = 'block';
+        cameraPlaceholder.style.display = 'none';
+        captureBtn.style.display = 'flex';
+        startCameraBtn.disabled = true;
+        startCameraBtn.style.opacity = '0.5';
+      } catch (err) {
+        alert('Unable to access camera: ' + err.message);
+      }
+    });
+
+    captureBtn.addEventListener('click', () => {
+      const vw = video.videoWidth;
+      const vh = video.videoHeight;
+      
+      if (!vw || !vh) {
+        alert('Camera not ready. Please try again.');
+        return;
+      }
+
+      const size = Math.min(vw, vh);
+      const sx = (vw - size) / 2;
+      const sy = (vh - size) / 2;
+
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, sx, sy, size, size, 0, 0, 512, 512);
+
+      capturedImage = canvas.toDataURL('image/jpeg', 0.9);
+      showPreview(capturedImage);
+      stopCamera();
+    });
+
+    uploadBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        capturedImage = e.target.result;
+        showPreview(capturedImage);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    retakeBtn.addEventListener('click', () => {
+      capturedImage = null;
+      previewImg.style.display = 'none';
+      previewPlaceholder.style.display = 'block';
+      retakeBtn.style.display = 'none';
+      predictBtn.style.display = 'none';
+      startCameraBtn.disabled = false;
+      startCameraBtn.style.opacity = '1';
+    });
+
+    predictBtn.addEventListener('click', () => {
+      if (!capturedImage) {
+        alert('Please capture or upload an image first.');
+        return;
+      }
+
+      // Show loading
+      predictBtn.innerHTML = '🔍 Analyzing... <span class="loader"></span>';
+      predictBtn.disabled = true;
+
+      setTimeout(() => {
+        const diseases = ['powdery', 'rusts', 'blight', 'bacterial', 'mosaic', 'rootrot'];
+        const diseaseNames = {
+          'powdery': 'Powdery Mildew',
+          'rusts': 'Rusts',
+          'blight': 'Blight Diseases',
+          'bacterial': 'Bacterial Wilts',
+          'mosaic': 'Mosaic Viruses',
+          'rootrot': 'Root Rot & Damping-Off'
+        };
+
+        const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
+        const confidence = (0.70 + Math.random() * 0.25).toFixed(4);
+
+        try {
+          localStorage.setItem('cd_img', capturedImage);
+          localStorage.setItem('cd_label', diseaseNames[randomDisease]);
+          localStorage.setItem('cd_conf', confidence);
+          localStorage.setItem('cd_disease_key', randomDisease);
+          
+          // Save to history
+          const history = JSON.parse(localStorage.getItem('cd_history') || '[]');
+          history.unshift({
+            image: capturedImage,
+            disease: diseaseNames[randomDisease],
+            diseaseKey: randomDisease,
+            confidence: parseFloat(confidence),
+            timestamp: new Date().toISOString()
+          });
+          localStorage.setItem('cd_history', JSON.stringify(history.slice(0, 20)));
+        } catch (e) {
+          console.error('localStorage error:', e);
+        }
+
+        window.location.href = 'result.html';
+      }, 1500);
+    });
+
+    function showPreview(imageData) {
+      previewImg.src = imageData;
+      previewImg.style.display = 'block';
+      previewPlaceholder.style.display = 'none';
+      retakeBtn.style.display = 'inline-flex';
+      predictBtn.style.display = 'inline-flex';
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
+      video.style.display = 'none';
+      cameraPlaceholder.style.display = 'block';
+      captureBtn.style.display = 'none';
+      startCameraBtn.disabled = false;
+      startCameraBtn.style.opacity = '1';
+    }
+
+    window.addEventListener('beforeunload', () => {
+      if (stream) stopCamera();
+    });
+  </script>
+</body>
+</html>

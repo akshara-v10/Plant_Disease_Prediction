@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Crop Disease Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Enhanced welcome page styles */
+        .welcome-hero {
+            background: linear-gradient(135deg, rgba(76,175,80,0.1) 0%, rgba(56,142,60,0.1) 100%);
+            padding: 60px 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .hero-text {
+            flex: 1;
+            min-width: 300px;
+            text-align: left;
+        }
+        
+        .hero-text h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-text p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .hero-image {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .hero-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hero-text {
+                text-align: center;
+            }
+            
+            .hero-text h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <button onclick="window.location.href='index.html'" class="nav-btn active">
+                <span class="nav-icon">🏠</span> Home
+            </button>
+            <button onclick="window.location.href='reference.html'" class="nav-btn">
+                <span class="nav-icon">📚</span> Reference
+            </button>
+            <button onclick="window.location.href='history.html'" class="nav-btn">
+                <span class="nav-icon">📜</span> History
+            </button>
+            <button onclick="window.location.href='settings.html'" class="nav-btn">
+                <span class="nav-icon">⚙️</span> Settings
+            </button>
+        </div>
+    </nav>
+
+    <div id="google_translate_element"></div>
+
+    <main>
+        <div class="center-container">
+            <div class="card welcome-hero">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1>🌾 Welcome to Crop Disease Detection 🌾</h1>
+                        <p>AI-powered crop disease identification system. Detect diseases instantly and get expert treatment recommendations.</p>
+                        <button onclick="window.location.href='options.html'" class="btn btn-large">
+                            Start Detection →
+                        </button>
+                    </div>
+                    <div class="hero-image">
+                        <img src="ImagesUsed\farmer.png" alt="Smart Farming">
+                    </div>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📸</div>
+                        <h3>Quick Detection</h3>
+                        <p>Capture or upload leaf images for instant analysis</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔬</div>
+                        <h3>AI Analysis</h3>
+                        <p>Advanced AI identifies diseases with high accuracy</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💊</div>
+                        <h3>Treatment Guide</h3>
+                        <p>Get detailed precautions and fertilizer recommendations</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <h3>Disease Library</h3>
+                        <p>Browse comprehensive disease reference information</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,te,hi',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

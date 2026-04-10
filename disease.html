@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Details - Crop Disease Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .detail-card {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 22px;
+        }
+
+        .detail-layout {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .detail-img-wrap {
+            width: 260px;
+            height: 220px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #fff;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .detail-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-text {
+            max-width: 480px;
+            color: #e9f8ea;
+            text-align: left;
+        }
+
+        .detail-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #dfffd8;
+        }
+
+        .section-heading {
+            margin-top: 14px;
+            font-weight: 700;
+            color: #fefefe;
+        }
+
+        ul {
+            margin-top: 6px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        .actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .error-message {
+            color: #ffcccc;
+            padding: 18px;
+            background: rgba(255, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .detail-text {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="google_translate_element"></div>
+
+    <main>
+        <div class="card detail-card">
+            <h2>Disease Details</h2>
+
+            <div id="errorBox" class="error-message" style="display:none;"></div>
+
+            <div class="detail-layout" id="detailLayout" style="display:none;">
+                <div class="detail-img-wrap">
+                    <img id="diseaseImg" class="detail-img" src="" alt="Disease image">
+                </div>
+
+                <div class="detail-text">
+                    <div class="detail-title" id="diseaseName">Disease Name</div>
+
+                    <div class="section-heading">Precautions</div>
+                    <ul id="precautionsList"></ul>
+
+                    <div class="section-heading">Recommended Fertilizers / Solutions</div>
+                    <ul id="fertilizersList"></ul>
+
+                    <div class="actions">
+                        <button class="btn" onclick="window.location.href='reference.html'">Back to Reference</button>
+                        <button class="btn" onclick="window.location.href='options.html'">Back to Options</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple database for the 6 diseases
+        const diseaseDB = {
+            powdery: {
+                name: "Powdery Mildew",
+                image: "ImagesUsed/powdery_mildew.png",
+                precautions: [
+                    "Avoid overcrowding of plants to improve air circulation.",
+                    "Do not overuse nitrogen-rich fertilizers (promotes tender, susceptible growth).",
+                    "Remove and destroy heavily infected leaves or plant parts.",
+                    "Water plants at the base, avoiding wetting the foliage in the evening."
+                ],
+                fertilizers: [
+                    "Use balanced NPK fertilizers instead of very high nitrogen formulations.",
+                    "Apply sulfur-based fungicidal sprays as per label instructions.",
+                    "Use potassium-rich fertilizers to improve plant strength and resistance.",
+                    "Organic options: neem oil or potassium bicarbonate sprays."
+                ]
+            },
+            rusts: {
+                name: "Rusts",
+                image: "ImagesUsed/rusts.png",
+                precautions: [
+                    "Grow resistant varieties whenever possible.",
+                    "Avoid overhead irrigation which keeps leaves wet for long periods.",
+                    "Remove and destroy infected leaves to reduce spore load.",
+                    "Rotate crops and avoid planting highly susceptible crops repeatedly."
+                ],
+                fertilizers: [
+                    "Use well-balanced fertilizers; avoid excessive nitrogen.",
+                    "Foliar fungicides containing triazoles or strobilurins (as per crop label).",
+                    "Use micronutrient sprays (Zn, Mn) if soil tests indicate deficiency.",
+                    "Organic options: copper-based fungicides in recommended doses."
+                ]
+            },
+            blight: {
+                name: "Blight Diseases",
+                image: "ImagesUsed/blight.jpg",
+                precautions: [
+                    "Use certified, disease-free seeds and seedlings.",
+                    "Ensure good drainage and avoid waterlogging in the field.",
+                    "Remove crop residues and infected plant parts after harvesting.",
+                    "Avoid overhead irrigation late in the day; wet foliage favors blight."
+                ],
+                fertilizers: [
+                    "Apply balanced NPK based on soil test, avoiding excessive nitrogen.",
+                    "Use protective fungicides such as mancozeb or chlorothalonil (label-specific).",
+                    "Calcium- and potassium-rich fertilizers help strengthen plant tissues.",
+                    "Bio-control options: Trichoderma-based formulations in soil/seed treatment."
+                ]
+            },
+            bacterial: {
+                name: "Bacterial Wilts",
+                image: "ImagesUsed/bacterial_wilts.jpg",
+                precautions: [
+                    "Practice crop rotation with non-host crops for 2–3 seasons.",
+                    "Use resistant or tolerant varieties whenever available.",
+                    "Avoid moving contaminated soil or water from infected fields.",
+                    "Disinfect tools and equipment that come into contact with infected plants."
+                ],
+                fertilizers: [
+                    "Avoid over-fertilizing with nitrogen which can stimulate soft growth.",
+                    "Apply well-decomposed organic manure to improve soil health.",
+                    "Use bio-fertilizers containing beneficial microbes (e.g., Pseudomonas, Bacillus).",
+                    "Copper-based bactericides can reduce spread when used early and as per label."
+                ]
+            },
+            mosaic: {
+                name: "Mosaic Viruses",
+                image: "ImagesUsed/mosaic.jpg",
+                precautions: [
+                    "Use virus-free seeds or certified planting material.",
+                    "Control insect vectors like aphids and whiteflies (main virus carriers).",
+                    "Promptly remove and destroy infected plants to reduce sources of infection.",
+                    "Keep the field free from weed hosts that can harbor viruses."
+                ],
+                fertilizers: [
+                    "Maintain good overall nutrition with balanced NPK for strong plant growth.",
+                    "Foliar sprays of micronutrients (especially zinc and boron) if deficient.",
+                    "Use recommended insecticides or bio-pesticides to manage vectors.",
+                    "Organic options: neem oil sprays to reduce vector populations."
+                ]
+            },
+            rootrot: {
+                name: "Root Rot & Damping-Off",
+                image: "ImagesUsed/root_rot.jpg",
+                precautions: [
+                    "Ensure well-drained soil; avoid waterlogging and heavy over-irrigation.",
+                    "Use sterilized or disease-free nursery media for seedlings.",
+                    "Do not sow seeds too densely; maintain proper spacing.",
+                    "Remove and destroy severely affected seedlings and plants promptly."
+                ],
+                fertilizers: [
+                    "Incorporate well-decomposed farmyard manure or compost to improve soil structure.",
+                    "Apply phosphorus and potassium fertilizers as per soil test to strengthen roots.",
+                    "Use fungicidal seed treatment (e.g., captan, thiram) before sowing, as per label.",
+                    "Bio-control: Trichoderma or other antagonistic fungi mixed with compost/soil."
+                ]
+            }
+        };
+
+        function loadDiseasePage() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("d");
+
+            const errorBox = document.getElementById("errorBox");
+            const layout = document.getElementById("detailLayout");
+
+            if (!id || !diseaseDB[id]) {
+                errorBox.style.display = "block";
+                errorBox.textContent = "No disease selected or disease data not found. Please go back to the Reference page.";
+                layout.style.display = "none";
+                return;
+            }
+
+            const data = diseaseDB[id];
+            layout.style.display = "flex";
+            errorBox.style.display = "none";
+
+            document.getElementById("diseaseName").textContent = data.name;
+            document.getElementById("diseaseImg").src = data.image;
+            document.getElementById("diseaseImg").alt = data.name;
+
+            const precautionsList = document.getElementById("precautionsList");
+            const fertilizersList = document.getElementById("fertilizersList");
+
+            precautionsList.innerHTML = data.precautions.map(p => `<li>${p}</li>`).join("");
+            fertilizersList.innerHTML = data.fertilizers.map(f => `<li>${f}</li>`).join("");
+        }
+
+        loadDiseasePage();
+
+        // Google Translate
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,te,hi',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>
